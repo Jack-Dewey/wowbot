@@ -9,6 +9,7 @@
   "author": "jackdewey",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.1558.0",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.4",
     "puppeteer": "^22.0.0",
