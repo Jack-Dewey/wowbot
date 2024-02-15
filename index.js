@@ -1,8 +1,12 @@
 // Require the necessary discord.js classes
+
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { token } = require('./config.json');
+const puppeteer = require('puppeteer-extra')
+
+// REMEMBER TO INSTALL PUPPET TO PI
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -25,6 +29,64 @@ for (const folder of commandFolders) {
 		}
 	}
 }
+
+const scrape_raiderio = async () => {
+    // Start a Puppeteer session with:
+    // - a visible browser (`headless: false` - easier to debug because you'll see the browser in action)
+    // - no default viewport (`defaultViewport: null` - website page will in full width and height)
+    const browser = await puppeteer.launch({
+      headless: false,
+      defaultViewport: null,
+    });
+  
+    // Open a new page
+    const page = await browser.newPage();
+  
+    // On this new page:
+    // - open the "http://quotes.toscrape.com/" website
+    // - wait until the dom content is loaded (HTML is ready)
+    await page.goto("https://raider.io/characters/us/sargeras/Entranced", {
+      waitUntil: "domcontentloaded",
+
+
+    });
+
+    const score = await page.evaluate(() => {
+        const score = document.getElementsByClassName("rio-badge-size--medium slds-badge rio-badge rio-badge-color--light rio-border--light rio-shadow--small rio-text-shadow--normal")[0].innerText;
+        console.log(score);
+        console.log("test");
+        return score;
+    });
+        
+    // Display the quotes
+    console.log(score);
+    // Close the browser
+    await browser.close();
+};
+    // // Get page data
+    // const quotes = await page.evaluate(() => {
+    //   // Fetch the first element with class "quote"
+    //   const quote = document.querySelector(".quote");
+  
+    //   // Fetch the sub-elements from the previously fetched quote element
+    //   // Get the displayed text and return it (`.innerText`)
+    //   //const text = quote.querySelector(".text").innerText;
+    //   //const author = quote.querySelector(".author").innerText;
+  
+    //   return {};
+    // });
+  
+//     // Display the quotes
+//     console.log(quotes);
+  
+//     // Close the browser
+//     await browser.close();
+//   };
+  
+  // Start the scraping
+scrape_raiderio();
+
+
 // Enable required event listeners for chat input commands
 client.on(Events.InteractionCreate, interaction => {
 	if (!interaction.isChatInputCommand()) return;
